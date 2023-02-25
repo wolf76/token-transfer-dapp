@@ -1,6 +1,6 @@
 # Token Transfer DApp
 
-Polygon Token Transfer DApp PoC
+Polygon Token Transfer DApp PoC.
 Created using VueJS and Polygon's matic.js
 
 ## Project setup
