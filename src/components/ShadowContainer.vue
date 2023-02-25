@@ -94,7 +94,7 @@ export default {
     },
 
     formatTokenBalance() {
-      return this.tokenBalance ? new BigNumber(this.tokenBalance).div(BIG_TEN.pow(new BigNumber(tokenDecimals))).toString(10) : 0;
+      return this.tokenBalance ? new BigNumber(this.tokenBalance).div(BIG_TEN.pow(new BigNumber(tokenDecimals))).toString() : 0;
     },
   },
 

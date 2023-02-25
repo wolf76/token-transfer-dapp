@@ -109,8 +109,6 @@ const actions = {
 
       localStorage.setItem("isWalletConnected", true);
       commit("SET_IS_CONNECTED_TO_WALLET", true);
-
-      dispatch("getTokenBalance");
     } catch (error) {
       return error.message;
     }
@@ -125,33 +123,41 @@ const actions = {
   },
 
   async getTokenBalance({ state, commit }) {
-    let url =
-      "https://open-api-testnet.polygon.technology/api/v1/balance/user/tokens?" +
-      new URLSearchParams({
-        userAddress: state.currentAddress,
-        tokenAddresses: state.tokenAddress,
-        chainId: state.chainId,
-      });
+    // let url =
+    //   "https://open-api-testnet.polygon.technology/api/v1/balance/user/tokens?" +
+    //   new URLSearchParams({
+    //     userAddress: state.currentAddress,
+    //     tokenAddresses: state.tokenAddress,
+    //     chainId: state.chainId,
+    //   });
 
-    let response = await fetch(url, {
-      method: "GET",
-      headers: Object.assign({
-        "x-access-token": "407a0211-6139-4a78-9450-f9733e35335f",
-        "Content-Type": "application/json",
-        Accept: "application/json",
-      }),
-    })
-      .then((res) => {
-        return res.json();
-      })
-      .catch((error) => {
-        console.log("Error: ", error);
-      });
+    // let response = await fetch(url, {
+    //   method: "GET",
+    //   headers: Object.assign({
+    //     "x-access-token": "407a0211-6139-4a78-9450-f9733e35335f",
+    //     "Content-Type": "application/json",
+    //     Accept: "application/json",
+    //   }),
+    // })
+    //   .then((res) => {
+    //     return res.json();
+    //   })
+    //   .catch((error) => {
+    //     console.log("Error: ", error);
+    //   });
 
-    if (response.success) {
-      let allKeys = Object.keys(response.result);
-      let balance = response.result[allKeys[0]].balance;
+    // if (response.success) {
+    //   let allKeys = Object.keys(response.result);
+    //   let balance = response.result[allKeys[0]].balance;
+    //   commit("SET_TOKEN_BALANCE", balance);
+    // }
+
+    try {
+      const erc20Token = state.posClient.erc20(state.tokenAddress, false);
+      const balance = await erc20Token.getBalance(state.currentAddress);
       commit("SET_TOKEN_BALANCE", balance);
+    } catch (error) {
+      console.log("Error: ", error);
     }
   },
 

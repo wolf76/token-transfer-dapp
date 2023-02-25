@@ -20,6 +20,7 @@ export default {
     if (JSON.parse(localStorage.getItem("isWalletConnected")) === true) {
       await this.initWeb3Modal();
       await this.initPosClient();
+      this.getTokenBalance();
     }
 
     window.addEventListener("load", () => {
@@ -39,7 +40,7 @@ export default {
   },
 
   methods: {
-    ...mapActions(["initWeb3Modal", "initPosClient", "setChainId", "setCurrentAddress"]),
+    ...mapActions(["initWeb3Modal", "initPosClient", "setChainId", "setCurrentAddress", "getTokenBalance"]),
   },
 };
 </script>
