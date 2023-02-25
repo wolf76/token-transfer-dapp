@@ -1,19 +1,47 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <h2>Polygon Token Transfer DApp PoC (Testnet)</h2>
+    <ShadowContainer />
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import { mapActions } from "vuex";
+import ShadowContainer from "./components/ShadowContainer.vue";
+import Web3 from "web3";
 
 export default {
-  name: 'App',
+  name: "App",
   components: {
-    HelloWorld
-  }
-}
+    ShadowContainer,
+  },
+
+  async mounted() {
+    if (JSON.parse(localStorage.getItem("isWalletConnected")) === true) {
+      await this.initWeb3Modal();
+      await this.initPosClient();
+    }
+
+    window.addEventListener("load", () => {
+      if (window.ethereum) {
+        // detect Metamask account change
+        window.ethereum.on("accountsChanged", (accounts) => {
+          this.setCurrentAddress(accounts[0]);
+        });
+
+        // detect Network account change
+        window.ethereum.on("chainChanged", (networkId) => {
+          let chainId = Web3.utils.toDecimal(networkId);
+          this.setChainId(chainId);
+        });
+      }
+    });
+  },
+
+  methods: {
+    ...mapActions(["initWeb3Modal", "initPosClient", "setChainId", "setCurrentAddress"]),
+  },
+};
 </script>
 
 <style>
@@ -21,8 +49,12 @@ export default {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
   color: #2c3e50;
   margin-top: 60px;
+}
+
+body {
+  background: #e6e6e6;
+  text-align: center;
 }
 </style>
