@@ -53,11 +53,6 @@
         </div>
 
         <div v-if="txReceipt" class="tx-details__receipt">
-          <div class="tx-details__receipt__head">Receipt TxHash:</div>
-          <div class="tx-details__receipt__value">{{ txReceipt.transactionHash }}</div>
-        </div>
-
-        <div v-if="txReceipt" class="tx-details__receipt">
           <div class="tx-details__receipt__head">Block Number:</div>
           <div class="tx-details__receipt__value">{{ txReceipt.blockNumber }}</div>
         </div>
@@ -107,7 +102,7 @@ export default {
   },
 
   methods: {
-    ...mapActions(["initWeb3Modal", "disconnectWallet"]),
+    ...mapActions(["initWeb3Modal", "disconnectWallet", "getTokenBalance"]),
 
     async connectWallet() {
       let initError = await this.initWeb3Modal();
@@ -119,15 +114,14 @@ export default {
         const amountBig = new BigNumber(amount).times(BIG_TEN.pow(new BigNumber(tokenDecimals))).toString();
         const erc20Token = await this.posClient.erc20(this.tokenAddress);
         const result = await erc20Token.transfer(amountBig, this.receiverAddress);
-        console.log("result:", result);
 
         const txHash = await result.getTransactionHash();
-        console.log("txHash:", txHash);
         this.txHash = txHash;
 
         const txReceipt = await result.getReceipt();
-        console.log("txReceipt:", txReceipt);
         this.txReceipt = txReceipt;
+
+        this.getTokenBalance();
       } catch (error) {
         console.log("Error: ", error);
       }
