@@ -21,7 +21,6 @@ const state = {
   tokenAddress: "0xfe4F5145f6e09952a5ba9e956ED0C25e3Fa4c7F1",
   tokenName: "Dummy ERC20",
   tokenBalance: "",
-  receiverAddress: "0xC1fB16F0b3A29F7A62C871eAA627F8a42E149589",
   posClient: null,
 };
 
@@ -48,10 +47,6 @@ const getters = {
 
   tokenBalance(state) {
     return state.tokenBalance;
-  },
-
-  receiverAddress(state) {
-    return state.receiverAddress;
   },
 
   posClient(state) {
@@ -109,6 +104,8 @@ const actions = {
 
       localStorage.setItem("isWalletConnected", true);
       commit("SET_IS_CONNECTED_TO_WALLET", true);
+
+      await dispatch("initPosClient");
     } catch (error) {
       return error.message;
     }
@@ -157,7 +154,7 @@ const actions = {
       const balance = await erc20Token.getBalance(state.currentAddress);
       commit("SET_TOKEN_BALANCE", balance);
     } catch (error) {
-      console.log("Error: ", error);
+      console.log("Error balance: ", error);
     }
   },
 

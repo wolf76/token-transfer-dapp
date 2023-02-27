@@ -65,7 +65,13 @@
           <div class="network-warning__msg">Switch to Mumbai Testnet (Polygon's) to execute the transfer.</div>
         </div>
 
-        <div v-else class="primary-btn transfer-button" @click="transferToken">Transfer Token</div>
+        <div v-else>
+          <div class="input-wrapper">
+            <input v-model="receiverAddress" type="text" placeholder="Receiver Address" autofocus spellcheck="false" />
+            <div v-if="receiverAddressErrorMsg" class="error-msg">Enter valid receiver address</div>
+          </div>
+          <div class="primary-btn transfer-button" @click="transferToken">Transfer Token</div>
+        </div>
       </div>
     </div>
   </div>
@@ -82,7 +88,7 @@ const tokenDecimals = 18;
 
 export default {
   computed: {
-    ...mapGetters(["isConnected", "currentAddress", "chainId", "tokenAddress", "tokenName", "tokenBalance", "receiverAddress", "posClient"]),
+    ...mapGetters(["isConnected", "currentAddress", "chainId", "tokenAddress", "tokenName", "tokenBalance", "posClient"]),
 
     isValidTestnet() {
       return isValidTestnetChain(this.chainId);
@@ -98,6 +104,8 @@ export default {
       isMetamaskNotInstalled: false,
       txHash: "",
       txReceipt: "",
+      receiverAddress: "",
+      receiverAddressErrorMsg: false,
     };
   },
 
@@ -107,9 +115,18 @@ export default {
     async connectWallet() {
       let initError = await this.initWeb3Modal();
       this.isMetamaskNotInstalled = initError === "No Web3 Provider found";
+
+      this.getTokenBalance();
     },
 
     async transferToken() {
+      this.receiverAddressErrorMsg = false;
+
+      if (!this.receiverAddress) {
+        this.receiverAddressErrorMsg = true;
+        return;
+      }
+
       try {
         const amountBig = new BigNumber(amount).times(BIG_TEN.pow(new BigNumber(tokenDecimals))).toString();
         const erc20Token = await this.posClient.erc20(this.tokenAddress);
@@ -123,7 +140,7 @@ export default {
 
         this.getTokenBalance();
       } catch (error) {
-        console.log("Error: ", error);
+        console.log("Error transfer: ", error);
       }
     },
   },
@@ -272,6 +289,42 @@ export default {
       .transfer-button {
         font-size: 1.125rem;
         font-weight: 700;
+      }
+
+      .input-wrapper {
+        margin-bottom: 2rem;
+        height: 3rem;
+
+        input {
+          border: 0;
+          outline: 0;
+          border-radius: 0.5rem;
+          padding: 1rem;
+          background-color: #fff;
+          text-shadow: 1px 1px 0 #fff;
+          height: 100%;
+          font-size: 1rem;
+          color: #2c3e50;
+          text-align: center;
+
+          box-shadow: inset 2px 2px 5px #babecc, inset -5px -5px 10px #fff;
+          width: 100%;
+          box-sizing: border-box;
+          transition: all 0.2s ease-in-out;
+          appearance: none;
+          -webkit-appearance: none;
+
+          &:focus {
+            box-shadow: inset 1px 1px 2px #babecc, inset -1px -1px 2px #fff;
+          }
+        }
+
+        .error-msg {
+          padding: 0.25rem 0;
+          color: rgb(210, 63, 63);
+          font-size: 14px;
+          font-weight: 600;
+        }
       }
     }
   }

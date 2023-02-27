@@ -19,7 +19,6 @@ export default {
   async mounted() {
     if (JSON.parse(localStorage.getItem("isWalletConnected")) === true) {
       await this.initWeb3Modal();
-      await this.initPosClient();
       this.getTokenBalance();
     }
 
@@ -40,7 +39,7 @@ export default {
   },
 
   methods: {
-    ...mapActions(["initWeb3Modal", "initPosClient", "setChainId", "setCurrentAddress", "getTokenBalance"]),
+    ...mapActions(["initWeb3Modal", "setChainId", "setCurrentAddress", "getTokenBalance"]),
   },
 };
 </script>
